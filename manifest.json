@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "People Notes",
+  "description": "A local-first Chrome extension for intentionally saving notes about public pages you choose to capture.",
+  "version": "0.1.0",
+  "action": {
+    "default_title": "People Notes",
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ]
+}
