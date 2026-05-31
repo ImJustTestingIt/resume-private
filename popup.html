@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>People Notes</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main class="app">
+    <header class="app-header">
+      <div>
+        <h1>People Notes</h1>
+        <p>Save context only when you choose to.</p>
+      </div>
+      <button id="exportBtn" class="icon-button" type="button" title="Export JSON">Export</button>
+    </header>
+
+    <section class="notice" aria-label="Privacy notice">
+      This extension does not run page collection in the background. Use the buttons below to save the current page or selected text intentionally.
+    </section>
+
+    <form id="noteForm" class="note-form">
+      <label>
+        Person or organization
+        <input id="personInput" name="person" type="text" autocomplete="off" placeholder="Name">
+      </label>
+
+      <label>
+        Note
+        <textarea id="noteInput" name="note" rows="4" placeholder="Why this page matters"></textarea>
+      </label>
+
+      <div class="button-row">
+        <button id="capturePageBtn" type="button">Use current page</button>
+        <button id="captureSelectionBtn" type="button">Add selected text</button>
+      </div>
+
+      <label>
+        Source
+        <input id="sourceInput" name="source" type="url" placeholder="https://example.com/profile">
+      </label>
+
+      <button class="primary" type="submit">Save note</button>
+    </form>
+
+    <section class="saved-section">
+      <div class="section-heading">
+        <h2>Saved notes</h2>
+        <button id="clearBtn" class="danger" type="button">Clear all</button>
+      </div>
+      <ol id="notesList" class="notes-list"></ol>
+      <p id="emptyState" class="empty-state">No notes yet.</p>
+    </section>
+  </main>
+
+  <template id="noteTemplate">
+    <li class="note-card">
+      <div class="note-card-header">
+        <h3></h3>
+        <button class="delete-button" type="button" title="Delete note">Delete</button>
+      </div>
+      <p class="note-text"></p>
+      <a class="note-link" target="_blank" rel="noreferrer"></a>
+      <time></time>
+    </li>
+  </template>
+
+  <script src="popup.js"></script>
+</body>
+</html>
