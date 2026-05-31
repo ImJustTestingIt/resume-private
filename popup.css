@@ -1,27 +1,27 @@
 :root {
   color-scheme: light dark;
-  --bg: #f8fafc;
+  --bg: #f7f7f3;
   --surface: #ffffff;
-  --surface-muted: #eef2f7;
-  --text: #111827;
-  --muted: #5b6472;
-  --accent: #176b87;
-  --accent-strong: #0f4d64;
+  --surface-muted: #eef2ed;
+  --text: #1f2933;
+  --muted: #667085;
+  --accent: #2f6f5e;
+  --accent-strong: #1f5144;
   --danger: #a73737;
-  --border: #d8dee8;
+  --border: #d9ded6;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #111418;
-    --surface: #1a1f25;
-    --surface-muted: #242b33;
-    --text: #f4f7fb;
-    --muted: #aeb8c5;
-    --accent: #63c5df;
-    --accent-strong: #93d9eb;
+    --bg: #111512;
+    --surface: #1b211d;
+    --surface-muted: #242c27;
+    --text: #f4f7f2;
+    --muted: #b6c0b8;
+    --accent: #81d0b4;
+    --accent-strong: #a6e4cf;
     --danger: #ff9a9a;
-    --border: #343c47;
+    --border: #374039;
   }
 }
 
@@ -71,8 +71,8 @@ textarea:focus-visible {
 
 .app-header,
 .section-heading,
-.note-card-header,
-.button-row {
+.memory-card-header,
+.field-row {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -80,14 +80,16 @@ textarea:focus-visible {
 
 .app-header,
 .section-heading,
-.note-card-header {
+.memory-card-header {
   justify-content: space-between;
 }
 
 h1,
 h2,
 h3,
-p {
+p,
+dl,
+dd {
   margin: 0;
 }
 
@@ -121,9 +123,14 @@ time {
   font-size: 12px;
 }
 
-.note-form {
+.memory-form {
   display: grid;
   gap: 10px;
+}
+
+.field-row label {
+  flex: 1;
+  min-width: 0;
 }
 
 label {
@@ -145,10 +152,6 @@ textarea {
   resize: vertical;
 }
 
-.button-row button {
-  flex: 1;
-}
-
 .primary {
   border-color: var(--accent);
   background: var(--accent);
@@ -158,7 +161,7 @@ textarea {
 
 @media (prefers-color-scheme: dark) {
   .primary {
-    color: #06212a;
+    color: #06251d;
   }
 }
 
@@ -177,7 +180,7 @@ textarea {
   margin-top: 18px;
 }
 
-.notes-list {
+.memories-list {
   display: grid;
   gap: 10px;
   margin: 10px 0 0;
@@ -185,7 +188,7 @@ textarea {
   list-style: none;
 }
 
-.note-card {
+.memory-card {
   display: grid;
   gap: 7px;
   border: 1px solid var(--border);
@@ -194,19 +197,25 @@ textarea {
   padding: 10px;
 }
 
-.note-text {
+.memory-text {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
-.note-link {
-  color: var(--accent-strong);
-  overflow-wrap: anywhere;
-  text-decoration: none;
+.memory-meta {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 8px;
+  color: var(--muted);
+  font-size: 12px;
 }
 
-.note-link:hover {
-  text-decoration: underline;
+.memory-meta dt {
+  font-weight: 700;
+}
+
+.memory-meta dd {
+  overflow-wrap: anywhere;
 }
 
 .empty-state {
