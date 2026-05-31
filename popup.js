@@ -1,38 +1,23 @@
-const STORAGE_KEY = "peopleNotes";
+const STORAGE_KEY = "memoryResumeEntries";
 
-const form = document.querySelector("#noteForm");
-const personInput = document.querySelector("#personInput");
-const noteInput = document.querySelector("#noteInput");
-const sourceInput = document.querySelector("#sourceInput");
-const capturePageBtn = document.querySelector("#capturePageBtn");
-const captureSelectionBtn = document.querySelector("#captureSelectionBtn");
+const form = document.querySelector("#memoryForm");
+const titleInput = document.querySelector("#titleInput");
+const memoryInput = document.querySelector("#memoryInput");
+const whenInput = document.querySelector("#whenInput");
+const feelingInput = document.querySelector("#feelingInput");
 const exportBtn = document.querySelector("#exportBtn");
 const clearBtn = document.querySelector("#clearBtn");
-const notesList = document.querySelector("#notesList");
+const memoriesList = document.querySelector("#memoriesList");
 const emptyState = document.querySelector("#emptyState");
-const noteTemplate = document.querySelector("#noteTemplate");
+const memoryTemplate = document.querySelector("#memoryTemplate");
 
-async function getNotes() {
+async function getMemories() {
   const result = await chrome.storage.local.get({ [STORAGE_KEY]: [] });
   return result[STORAGE_KEY];
 }
 
-async function setNotes(notes) {
-  await chrome.storage.local.set({ [STORAGE_KEY]: notes });
-}
-
-async function getActiveTab() {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  return tab;
-}
-
-async function getSelectedText(tabId) {
-  const [result] = await chrome.scripting.executeScript({
-    target: { tabId },
-    func: () => window.getSelection().toString().trim()
-  });
-
-  return result?.result ?? "";
+async function setMemories(memories) {
+  await chrome.storage.local.set({ [STORAGE_KEY]: memories });
 }
 
 function formatTimestamp(value) {
@@ -42,110 +27,99 @@ function formatTimestamp(value) {
   }).format(new Date(value));
 }
 
-function createNoteElement(note) {
-  const fragment = noteTemplate.content.cloneNode(true);
-  const item = fragment.querySelector(".note-card");
+function addMetaValue(list, label, value) {
+  if (!value) return;
+
+  const term = document.createElement("dt");
+  const detail = document.createElement("dd");
+
+  term.textContent = label;
+  detail.textContent = value;
+  list.append(term, detail);
+}
+
+function createMemoryElement(memory) {
+  const fragment = memoryTemplate.content.cloneNode(true);
+  const item = fragment.querySelector(".memory-card");
   const title = fragment.querySelector("h3");
-  const text = fragment.querySelector(".note-text");
-  const link = fragment.querySelector(".note-link");
+  const text = fragment.querySelector(".memory-text");
+  const meta = fragment.querySelector(".memory-meta");
   const time = fragment.querySelector("time");
   const deleteButton = fragment.querySelector(".delete-button");
 
-  item.dataset.id = note.id;
-  title.textContent = note.person || "Untitled";
-  text.textContent = note.note || "No note added.";
-  time.dateTime = note.createdAt;
-  time.textContent = formatTimestamp(note.createdAt);
+  item.dataset.id = memory.id;
+  title.textContent = memory.title || "Untitled memory";
+  text.textContent = memory.body || "No memory added.";
+  time.dateTime = memory.createdAt;
+  time.textContent = formatTimestamp(memory.createdAt);
 
-  if (note.source) {
-    link.href = note.source;
-    link.textContent = note.source;
-  } else {
-    link.remove();
+  addMetaValue(meta, "When", memory.when);
+  addMetaValue(meta, "Feeling", memory.feeling);
+
+  if (!meta.children.length) {
+    meta.remove();
   }
 
   deleteButton.addEventListener("click", async () => {
-    const notes = await getNotes();
-    await setNotes(notes.filter((savedNote) => savedNote.id !== note.id));
-    await renderNotes();
+    const memories = await getMemories();
+    await setMemories(memories.filter((savedMemory) => savedMemory.id !== memory.id));
+    await renderMemories();
   });
 
   return fragment;
 }
 
-async function renderNotes() {
-  const notes = await getNotes();
-  notesList.replaceChildren(...notes.map(createNoteElement));
-  emptyState.hidden = notes.length > 0;
+async function renderMemories() {
+  const memories = await getMemories();
+  memoriesList.replaceChildren(...memories.map(createMemoryElement));
+  emptyState.hidden = memories.length > 0;
 }
-
-capturePageBtn.addEventListener("click", async () => {
-  const tab = await getActiveTab();
-  sourceInput.value = tab?.url ?? "";
-
-  if (!personInput.value.trim() && tab?.title) {
-    personInput.value = tab.title;
-  }
-});
-
-captureSelectionBtn.addEventListener("click", async () => {
-  const tab = await getActiveTab();
-  if (!tab?.id) return;
-
-  const selectedText = await getSelectedText(tab.id);
-  if (!selectedText) return;
-
-  const separator = noteInput.value.trim() ? "\n\n" : "";
-  noteInput.value = `${noteInput.value}${separator}${selectedText}`;
-
-  if (!sourceInput.value.trim() && tab.url) {
-    sourceInput.value = tab.url;
-  }
-});
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const person = personInput.value.trim();
-  const note = noteInput.value.trim();
-  const source = sourceInput.value.trim();
+  const title = titleInput.value.trim();
+  const body = memoryInput.value.trim();
+  const when = whenInput.value.trim();
+  const feeling = feelingInput.value.trim();
 
-  if (!person && !note && !source) return;
+  if (!title && !body && !when && !feeling) return;
 
-  const notes = await getNotes();
-  const nextNote = {
+  const memories = await getMemories();
+  const nextMemory = {
     id: crypto.randomUUID(),
-    person,
-    note,
-    source,
+    title,
+    body,
+    when,
+    feeling,
     createdAt: new Date().toISOString()
   };
 
-  await setNotes([nextNote, ...notes]);
+  await setMemories([nextMemory, ...memories]);
   form.reset();
-  await renderNotes();
+  await renderMemories();
 });
 
 clearBtn.addEventListener("click", async () => {
-  const confirmed = confirm("Delete all saved notes from this browser?");
+  const confirmed = confirm("Delete all saved memories from this browser?");
   if (!confirmed) return;
 
-  await setNotes([]);
-  await renderNotes();
+  await setMemories([]);
+  await renderMemories();
 });
 
 exportBtn.addEventListener("click", async () => {
-  const notes = await getNotes();
-  const blob = new Blob([JSON.stringify(notes, null, 2)], {
+  const memories = await getMemories();
+  const blob = new Blob([JSON.stringify(memories, null, 2)], {
     type: "application/json"
   });
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
 
   anchor.href = url;
-  anchor.download = `people-notes-${new Date().toISOString().slice(0, 10)}.json`;
+  anchor.download = `memory-resume-${new Date().toISOString().slice(0, 10)}.json`;
   anchor.click();
   URL.revokeObjectURL(url);
 });
 
-renderNotes();
+renderMemories();
