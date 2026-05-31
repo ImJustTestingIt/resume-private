@@ -3,65 +3,67 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>People Notes</title>
+  <title>Memory Resume</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <main class="app">
     <header class="app-header">
       <div>
-        <h1>People Notes</h1>
-        <p>Save context only when you choose to.</p>
+        <h1>Memory Resume</h1>
+        <p>A list of moments worth keeping.</p>
       </div>
       <button id="exportBtn" class="icon-button" type="button" title="Export JSON">Export</button>
     </header>
 
     <section class="notice" aria-label="Privacy notice">
-      This extension does not run page collection in the background. Use the buttons below to save the current page or selected text intentionally.
+      This extension stores only the memories you write here. It does not read pages, collect browsing activity, or build profiles about people.
     </section>
 
-    <form id="noteForm" class="note-form">
+    <form id="memoryForm" class="memory-form">
       <label>
-        Person or organization
-        <input id="personInput" name="person" type="text" autocomplete="off" placeholder="Name">
+        Memory title
+        <input id="titleInput" name="title" type="text" autocomplete="off" placeholder="The day the old plan finally worked">
       </label>
 
       <label>
-        Note
-        <textarea id="noteInput" name="note" rows="4" placeholder="Why this page matters"></textarea>
+        Memory
+        <textarea id="memoryInput" name="memory" rows="5" placeholder="What happened? What do you want to remember?"></textarea>
       </label>
 
-      <div class="button-row">
-        <button id="capturePageBtn" type="button">Use current page</button>
-        <button id="captureSelectionBtn" type="button">Add selected text</button>
+      <div class="field-row">
+        <label>
+          When
+          <input id="whenInput" name="when" type="text" autocomplete="off" placeholder="Spring 2026">
+        </label>
+
+        <label>
+          Feeling
+          <input id="feelingInput" name="feeling" type="text" autocomplete="off" placeholder="Grateful">
+        </label>
       </div>
 
-      <label>
-        Source
-        <input id="sourceInput" name="source" type="url" placeholder="https://example.com/profile">
-      </label>
-
-      <button class="primary" type="submit">Save note</button>
+      <button class="primary" type="submit">Save memory</button>
     </form>
 
     <section class="saved-section">
       <div class="section-heading">
-        <h2>Saved notes</h2>
+        <h2>Saved memories</h2>
         <button id="clearBtn" class="danger" type="button">Clear all</button>
       </div>
-      <ol id="notesList" class="notes-list"></ol>
-      <p id="emptyState" class="empty-state">No notes yet.</p>
+      <ol id="memoriesList" class="memories-list"></ol>
+      <p id="emptyState" class="empty-state">No memories yet.</p>
     </section>
   </main>
 
-  <template id="noteTemplate">
-    <li class="note-card">
-      <div class="note-card-header">
+  <template id="memoryTemplate">
+    <li class="memory-card">
+      <div class="memory-card-header">
         <h3></h3>
-        <button class="delete-button" type="button" title="Delete note">Delete</button>
+        <button class="delete-button" type="button" title="Delete memory">Delete</button>
       </div>
-      <p class="note-text"></p>
-      <a class="note-link" target="_blank" rel="noreferrer"></a>
+      <p class="memory-text"></p>
+      <dl class="memory-meta"></dl>
       <time></time>
     </li>
   </template>
